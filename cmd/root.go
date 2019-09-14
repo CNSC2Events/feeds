@@ -20,11 +20,24 @@ import (
 	"os"
 
 	"github.com/CNSC2Events/feeds/service"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
 var port int32
+var debugMode bool
+
+func init() {
+	if debugMode {
+		EnableDebug()
+	}
+}
+
+func EnableDebug() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
+}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -53,6 +66,6 @@ func Execute() {
 func init() {
 
 	RootCmd.Flags().Int32VarP(&port, "port", "p", 8888, "service port")
-
+	RootCmd.Flags().BoolVarP(&debugMode, "debug", "d", false, "open debug mode")
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

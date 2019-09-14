@@ -14,8 +14,8 @@ const (
 	TLNET_SC2EVENTSURL = `https://liquipedia.net/starcraft2/api.php?action=parse&format=json&page=Liquipedia:Upcoming_and_ongoing_matches`
 )
 
-func fetchTL(ctx context.Context) (io.Reader, error) {
-	newContext, cancel := context.WithTimeout(ctx, 2*time.Second)
+func fetchTL(ctx context.Context) (io.ReadCloser, error) {
+	newContext, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(newContext, "GET", TLNET_SC2EVENTSURL, nil)
@@ -26,7 +26,6 @@ func fetchTL(ctx context.Context) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 	return resp.Body, nil
 }
 
@@ -35,6 +34,7 @@ func buildCache(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	defer r.Close()
 	p, err := tlp.NewTimelineParserFromReader(r)
 	if err != nil {
 		return err

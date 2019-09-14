@@ -1,0 +1,49 @@
+kind: pipeline
+name: feeds
+
+workspace:
+  base: /go
+  path: src/github.com/CNSC2Events/feeds
+
+steps:
+- name: build
+  image: golang:1.13
+  environment:
+    GO111MODULE: on
+  commands:
+  - go install
+
+- name: up_dev
+  image: golang:1.13
+  environment:
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+    GO111MODULE: on
+  commands:
+  - curl -sf https://up.apex.sh/install | sh
+  - up deploy staging -v
+  when:
+    event:
+    - push
+    branch:
+    - master
+    - dev
+
+- name: up_prod
+  image: golang:1.13
+  environment:
+    AWS_SECRET_ACCESS_KEY:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID:
+      from_secret: AWS_ACCESS_KEY_ID
+    GO111MODULE: on
+  commands:
+  - curl -sf https://up.apex.sh/install | sh
+  - up deploy production -v
+  when:
+    event:
+    - push
+    branch:
+    - master

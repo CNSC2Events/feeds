@@ -65,7 +65,7 @@ func Execute() {
 
 func init() {
 
-	RootCmd.Flags().Int32VarP(&port, "port", "p", 8888, "service port")
+	RootCmd.Flags().Int32VarP(&port, "port", "p", 0, "service port")
 	RootCmd.Flags().BoolVarP(&debugMode, "debug", "d", false, "open debug mode")
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

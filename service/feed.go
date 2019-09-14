@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/CNSC2Events/feeds/service/internal/atom"
 	"github.com/CNSC2Events/feeds/service/internal/cache"
@@ -24,7 +25,8 @@ func NewFeedService(port int32) FeedService {
 
 func (fs FeedService) Serve(ctx context.Context) error {
 
-	http.HandleFunc("/sc2", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/xml")
 		data := cache.GetAllMatches()
 		f := atom.Feeds{Items: data}
 		ww, err := f.Writer()
@@ -37,6 +39,11 @@ func (fs FeedService) Serve(ctx context.Context) error {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 	})
-
-	return http.ListenAndServe(fmt.Sprintf(":%d", fs.port), nil)
+	var addr string
+	if fs.port == 0 {
+		addr = fmt.Sprintf(":%s", os.Getenv("PORT"))
+	} else {
+		addr = fmt.Sprintf(":%d", fs.port)
+	}
+	return http.ListenAndServe(addr, nil)
 }

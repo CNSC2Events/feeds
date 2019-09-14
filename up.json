@@ -1,0 +1,7 @@
+{
+    "name": "feeds",
+    "profile": "scnace_aws",
+    "regions": [
+        "ap-southeast-1"
+    ]
+}

@@ -20,6 +20,7 @@ import (
 	"os"
 
 	"github.com/CNSC2Events/feeds/service"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +32,9 @@ var RootCmd = &cobra.Command{
 	Short: "tl.net feed service",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
+		log.Info().Msg("cache: cache will be registered")
 		service.RegisterCache(ctx)
+		log.Info().Msgf("service: feed service will start at port %d", port)
 		if err := service.NewFeedService(port).Serve(ctx); err != nil {
 			panic(err)
 		}

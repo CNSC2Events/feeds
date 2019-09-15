@@ -47,3 +47,14 @@ steps:
     - push
     branch:
     - master
+
+- name: publish_dockerhub
+  image: plugins/docker
+  settings:
+    repo: scnace/feeds
+    autotag: true
+    username:
+        from_secret: DOCKERHUB_USER
+    password:
+        from_secret: DOCKERHUB_PASSWORD
+    dockerfile: Dockerfile

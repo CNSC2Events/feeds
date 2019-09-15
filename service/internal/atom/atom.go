@@ -28,9 +28,13 @@ func (f Feeds) Writer() (*bytes.Buffer, error) {
 	var items []*feeds.Item
 
 	for _, item := range f.Items {
+		var dURL string
+		if item.DetailURL != nil {
+			dURL = item.DetailURL.String()
+		}
 		items = append(items, &feeds.Item{
 			Title:       buildTitle(item),
-			Link:        &feeds.Link{Href: item.DetailURL.String()},
+			Link:        &feeds.Link{Href: dURL},
 			Description: "",
 			Author:      &feeds.Author{Name: "Nace Sc", Email: "scbizu@gmail.com"},
 			Created:     now,
@@ -48,5 +52,8 @@ func (f Feeds) Writer() (*bytes.Buffer, error) {
 }
 
 func buildTitle(e *tlp.Event) string {
+	if e.IsOnGoing {
+		return fmt.Sprintf("[OnGoing][%s]%s", e.Series, e.GetVersus())
+	}
 	return fmt.Sprintf("[%s]%s", e.Series, e.GetVersus())
 }

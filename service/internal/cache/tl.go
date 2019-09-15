@@ -43,7 +43,7 @@ func buildCache(ctx context.Context) error {
 	if err := p.Parse(); err != nil {
 		return err
 	}
-	log.Debug().Interface("", p.Events).Send()
+	log.Debug().Interface("events", p.Events).Send()
 	for _, e := range p.Events {
 		data.Store(encodeFeedItemKey(p.RevID, e.VS.P1, e.VS.P2), e)
 	}

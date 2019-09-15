@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/CNSC2Events/tlp"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -15,7 +16,7 @@ const (
 )
 
 func fetchTL(ctx context.Context) (io.ReadCloser, error) {
-	newContext, cancel := context.WithTimeout(ctx, 10*time.Second)
+	newContext, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(newContext, "GET", TLNET_SC2EVENTSURL, nil)
@@ -42,10 +43,9 @@ func buildCache(ctx context.Context) error {
 	if err := p.Parse(); err != nil {
 		return err
 	}
+	log.Debug().Interface("", p.Events).Send()
 	for _, e := range p.Events {
-		if e.IsOnGoing {
-			data.Store(encodeFeedItemKey(p.RevID, e.VS.P1, e.VS.P2), e)
-		}
+		data.Store(encodeFeedItemKey(p.RevID, e.VS.P1, e.VS.P2), e)
 	}
 	return nil
 }
@@ -57,10 +57,11 @@ func encodeFeedItemKey(revID string, p1, p2 string) string {
 func GetAllMatches() []*tlp.Event {
 	var matches []*tlp.Event
 	data.Range(func(key, value interface{}) bool {
+		log.Debug().Interface(key.(string), value)
 		if m, ok := value.(*tlp.Event); ok {
 			matches = append(matches, m)
 		}
 		return true
 	})
-	return nil
+	return matches
 }

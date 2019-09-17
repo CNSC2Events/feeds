@@ -43,7 +43,9 @@ func buildCache(ctx context.Context) error {
 	if err := p.Parse(); err != nil {
 		return err
 	}
-	log.Debug().Interface("events", p.Events).Send()
+	if len(p.Events) == 0 {
+		log.Error().Str("cache", "found no events").Send()
+	}
 	for _, e := range p.Events {
 		data.Store(encodeFeedItemKey(p.RevID, e.VS.P1, e.VS.P2), e)
 	}

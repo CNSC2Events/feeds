@@ -16,7 +16,7 @@ const (
 )
 
 func fetchTL(ctx context.Context) (io.ReadCloser, error) {
-	newContext, cancel := context.WithTimeout(ctx, 5*time.Second)
+	newContext, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(newContext, "GET", TLNET_SC2EVENTSURL, nil)

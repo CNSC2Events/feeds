@@ -26,6 +26,8 @@ func NewFeedService(port int32) FeedService {
 func (fs FeedService) Serve(ctx context.Context) error {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		cache.GetReadySignal()
+		log.Info().Str("init", "cache ready")
 		w.Header().Set("Content-Type", "text/xml")
 		data := cache.GetAllMatches()
 		f := atom.Feeds{Items: data}

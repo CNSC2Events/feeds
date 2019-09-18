@@ -8,6 +8,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var rdyChan chan struct{}
+
 var data *sync.Map
 
 // Register inits the feeds cache
@@ -15,6 +17,18 @@ func Init(ctx context.Context) {
 	data = new(sync.Map)
 
 	go refreshCache(ctx)
+}
+
+func GetReadySignal() {
+	if getSize() > 0 {
+		return
+	}
+	for {
+		select {
+		case <-rdyChan:
+			return
+		}
+	}
 }
 
 func refreshCache(ctx context.Context) {
@@ -36,6 +50,17 @@ func refreshCache(ctx context.Context) {
 }
 
 func refreshOnceIfEmpty(ctx context.Context) {
+	if getSize() > 0 {
+		return
+	}
+	if err := buildCache(ctx); err != nil {
+		log.Warn().Err(err).Send()
+	}
+	rdyChan <- struct{}{}
+}
+
+func getSize() int {
+
 	var len int
 
 	data.Range(func(k, v interface{}) bool {
@@ -43,9 +68,5 @@ func refreshOnceIfEmpty(ctx context.Context) {
 		return true
 	})
 
-	if len == 0 {
-		if err := buildCache(ctx); err != nil {
-			log.Warn().Err(err).Send()
-		}
-	}
+	return len
 }

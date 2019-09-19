@@ -23,9 +23,14 @@ func GetReadySignal() {
 	if getSize() > 0 {
 		return
 	}
+	ticker := time.NewTicker(10 * time.Second)
 	for {
 		select {
 		case <-rdyChan:
+			ticker.Stop()
+			return
+		case <-ticker.C:
+			log.Info().Msg("reqeust tl timeout")
 			return
 		}
 	}

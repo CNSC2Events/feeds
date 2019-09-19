@@ -13,24 +13,6 @@ steps:
   commands:
   - go install
 
-- name: up_dev
-  image: golang:1.13
-  environment:
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-    GO111MODULE: on
-  commands:
-  - curl -sf https://up.apex.sh/install | sh
-  - up deploy staging -v
-  when:
-    event:
-    - push
-    branch:
-    - master
-    - dev
-
 - name: up_prod
   image: golang:1.13
   environment:
@@ -48,13 +30,3 @@ steps:
     branch:
     - master
 
-- name: publish_dockerhub
-  image: plugins/docker
-  settings:
-    repo: scnace/feeds
-    autotag: true
-    username:
-        from_secret: DOCKERHUB_USER
-    password:
-        from_secret: DOCKERHUB_PASSWORD
-    dockerfile: Dockerfile

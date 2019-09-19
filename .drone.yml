@@ -29,4 +29,5 @@ steps:
     - push
     branch:
     - master
+    - dry-refresh
 

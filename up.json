@@ -3,12 +3,25 @@
     "profile": "scnace_aws",
     "proxy": {
         "timeout": 25,
-        "listen_timeout":25
+        "listen_timeout": 25
     },
     "regions": [
         "ap-southeast-1"
     ],
     "environment": {
         "TZ": "Asia/Shanghai"
+    },
+    "lambda": {
+        "memory": 512,
+        "vpc": {
+            "subnets": [
+                "subnet-a7c9d7c0",
+                "subnet-c4f4219d",
+                "subnet-fa7a74b3"
+            ],
+            "security_groups": [
+                "sg-800abafa"
+            ]
+        }
     }
 }

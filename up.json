@@ -1,10 +1,6 @@
 {
     "name": "feeds",
     "profile": "scnace_aws",
-    "proxy": {
-        "timeout": 25,
-        "listen_timeout": 25
-    },
     "regions": [
         "ap-southeast-1"
     ],

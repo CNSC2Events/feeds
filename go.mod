@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/CNSC2Events/tlp v1.0.1
+	github.com/aws/aws-lambda-go v1.13.2
 	github.com/gorilla/feeds v1.1.1
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/rs/zerolog v1.15.0

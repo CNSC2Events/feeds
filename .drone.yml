@@ -3,13 +3,16 @@ name: feeds
 
 steps:
 - name: build
-  image: golang:1.13
+  image: golang:1.13.0-alpine
   environment:
     LAMBDA_BUILD: on
     PORT: 8888
   commands:
   - go build -o main main.go
+  - apk add zip
   - zip -r -9 lambda-feeds-${DRONE_BUILD_NUMBER}.zip main
+  - apk add tzdata
+  - cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >  /etc/timezone
 
 - name: s3-publish
   image: plugins/s3

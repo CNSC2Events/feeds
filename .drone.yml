@@ -1,15 +1,12 @@
 kind: pipeline
 name: feeds
 
-workspace:
-  base: /go
-  path: src/github.com/CNSC2Events/feeds
-
 steps:
 - name: build
   image: golang:1.13
   environment:
     LAMBDA_BUILD: on
+    PORT: 8888
   commands:
   - go build -o main main.go
   - zip -r -9 lambda-feeds-${DRONE_BUILD_NUMBER}.zip main

@@ -1,13 +1,12 @@
 kind: pipeline
 name: feeds
 
-workspace:
-  base: /go
-  path: src/github.com/CNSC2Events/feeds
-
 steps:
 - name: build
   image: golang:1.13.0-alpine
+  volumes:
+    - name: build_zip
+      path: /tmp/build_zip
   environment:
     LAMBDA_BUILD: on
     PORT: 8888
@@ -20,6 +19,9 @@ steps:
 
 - name: s3-publish
   image: plugins/s3
+  volumes:
+    - name: build_zip
+      path: /tmp/build_zip
   settings:
     acl: private
     region: ap-southeast-1
@@ -29,7 +31,7 @@ steps:
       from_secret: AWS_ACCESS_KEY_ID
     bucket: lbd-project
     target: project-feed
-    source: lambda-project-${DRONE_BUILD_NUMBER}.zip
+    source: /tmp/build_zip/*
   when:
     event:
     - push

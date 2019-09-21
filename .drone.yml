@@ -43,15 +43,16 @@ steps:
     - promote
 
 - name: deploy_serverless
-  image: omerxx/drone-lambda-plugin
-  pull: true
-  function_name: feeds
-  s3_bucket: lbd-project
-  aws_secret_access_key:
-    from_secret: AWS_SECRET_ACCESS_KEY
-  aws_access_key_id:
-    from_secret: AWS_ACCESS_KEY_ID
-  filename: project-feed/lambda-feeds.zip
+  image: scnace/drone-lambda-plugin
+  settings:
+    function_name: feeds
+    s3_bucket: lbd-project
+    aws_secret_access_key:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    aws_access_key_id:
+      from_secret: AWS_ACCESS_KEY_ID
+    filename: project-feed/lambda-feeds.zip
+    region: ap-southeast-1
   when:
     event:
     - promote
@@ -60,7 +61,7 @@ steps:
   image: plugins/docker
   settings:
     repo: scnace/feeds
-    autotag: true
+    auto_tag: true
     username:
         from_secret: DOCKERHUB_USER
     password:

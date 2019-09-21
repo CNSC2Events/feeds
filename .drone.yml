@@ -51,7 +51,7 @@ steps:
       from_secret: AWS_SECRET_ACCESS_KEY
     aws_access_key_id:
       from_secret: AWS_ACCESS_KEY_ID
-    filename: project-feed/lambda-feeds.zip
+    file_name: project-feed/lambda-feeds.zip
     region: ap-southeast-1
   when:
     event:

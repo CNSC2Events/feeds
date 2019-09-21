@@ -3,25 +3,31 @@ name: feeds
 
 steps:
 - name: build
+  image: golang:1.13
+  commands:
+    - go test ./...
+    - go install
+  when:
+    event:
+    - push
+
+- name: build_serverless
   image: golang:1.13.0-alpine
-  volumes:
-    - name: build_zip
-      path: /tmp/build_zip
   environment:
     LAMBDA_BUILD: on
     PORT: 8888
   commands:
   - go build -o main main.go
   - apk add zip
-  - zip -r -9 lambda-feeds-${DRONE_BUILD_NUMBER}.zip main
+  - zip -r -9 lambda-feeds.zip main
   - apk add tzdata
   - cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >  /etc/timezone
+  when:
+    event:
+    - promote
 
 - name: s3-publish
   image: plugins/s3
-  volumes:
-    - name: build_zip
-      path: /tmp/build_zip
   settings:
     acl: private
     region: ap-southeast-1
@@ -31,13 +37,10 @@ steps:
       from_secret: AWS_ACCESS_KEY_ID
     bucket: lbd-project
     target: project-feed
-    source: /tmp/build_zip/*
+    source: lambda-feeds.zip
   when:
     event:
-    - push
-    branch:
-    - master
-    - dev
+    - promote
 
 - name: deploy_serverless
   image: omerxx/drone-lambda-plugin
@@ -51,10 +54,7 @@ steps:
   filename: project-feed/lambda-project-${DRONE_BUILD_NUMBER}.zip
   when:
     event:
-    - push
-    branch:
-    - master
-    - dev
+    - promote
 
 - name: publish_dockerhub
   image: plugins/docker

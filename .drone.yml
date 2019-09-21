@@ -1,6 +1,10 @@
 kind: pipeline
 name: feeds
 
+workspace:
+  base: /go
+  path: src/github.com/CNSC2Events/feeds
+
 steps:
 - name: build
   image: golang:1.13.0-alpine

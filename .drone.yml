@@ -1,29 +1,30 @@
 kind: pipeline
 name: feeds
 
-workspace:
-  base: /go
-  path: src/github.com/CNSC2Events/feeds
-
 steps:
 - name: build
-  image: golang:1.13
+  image: golang:1.13.0-alpine
   environment:
-    GO111MODULE: on
+    LAMBDA_BUILD: on
+    PORT: 8888
   commands:
-  - go install
+  - go build -o main main.go
+  - apk add zip
+  - zip -r -9 lambda-feeds-${DRONE_BUILD_NUMBER}.zip main
+  - apk add tzdata
+  - cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >  /etc/timezone
 
-- name: up_dev
-  image: golang:1.13
-  environment:
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-    GO111MODULE: on
-  commands:
-  - curl -sf https://up.apex.sh/install | sh
-  - up deploy staging -v
+- name: s3-publish
+  image: plugins/s3
+  acl: private
+  region: ap-southeast-1
+  secret_key:
+    from_secret: AWS_SECRET_ACCESS_KEY
+  access_key:
+    from_secret: AWS_ACCESS_KEY_ID
+  bucket: lbd-project
+  target: project-feed
+  source: lambda-project-${DRONE_BUILD_NUMBER}.zip
   when:
     event:
     - push
@@ -31,22 +32,22 @@ steps:
     - master
     - dev
 
-- name: up_prod
-  image: golang:1.13
-  environment:
-    AWS_SECRET_ACCESS_KEY:
-      from_secret: AWS_SECRET_ACCESS_KEY
-    AWS_ACCESS_KEY_ID:
-      from_secret: AWS_ACCESS_KEY_ID
-    GO111MODULE: on
-  commands:
-  - curl -sf https://up.apex.sh/install | sh
-  - up deploy production -v
+- name: deploy_serverless
+  image: omerxx/drone-lambda-plugin
+  pull: true
+  function_name: feeds
+  s3_bucket: lbd-project
+  aws_secret_access_key:
+    from_secret: AWS_SECRET_ACCESS_KEY
+  aws_access_key_id:
+    from_secret: AWS_ACCESS_KEY_ID
+  filename: project-feed/lambda-project-${DRONE_BUILD_NUMBER}.zip
   when:
     event:
     - push
     branch:
     - master
+    - dev
 
 - name: publish_dockerhub
   image: plugins/docker
@@ -58,3 +59,8 @@ steps:
     password:
         from_secret: DOCKERHUB_PASSWORD
     dockerfile: Dockerfile
+  when:
+    event:
+    - push
+    branch:
+    - master

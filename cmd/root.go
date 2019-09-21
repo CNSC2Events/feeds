@@ -63,6 +63,16 @@ func Execute() {
 	}
 }
 
+func ServerlessExecute() {
+	ctx := context.Background()
+	log.Info().Msg("cache: cache will be registered")
+	service.RegisterCache(ctx)
+	log.Info().Msgf("service: feed service will start at port %d", port)
+	if err := service.NewFeedService(port).Serve(ctx); err != nil {
+		panic(err)
+	}
+}
+
 func init() {
 
 	RootCmd.Flags().Int32VarP(&port, "port", "p", 0, "service port")

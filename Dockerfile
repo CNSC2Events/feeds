@@ -4,7 +4,7 @@ WORKDIR /builder
 
 ADD . /builder
 
-RUN go build -o feeds *.go
+RUN go build -o feeds main.go
 
 FROM alpine
 

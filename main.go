@@ -14,8 +14,17 @@
 
 package main
 
-import "github.com/CNSC2Events/feeds/cmd"
+import (
+	"os"
+
+	"github.com/CNSC2Events/feeds/cmd"
+	"github.com/aws/aws-lambda-go/lambda"
+)
 
 func main() {
-	cmd.Execute()
+	if os.Getenv("LAMBDA_BUILD") == "on" {
+		lambda.Start(cmd.ServerlessExecute)
+	} else {
+		cmd.Execute()
+	}
 }

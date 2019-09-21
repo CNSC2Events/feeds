@@ -20,15 +20,16 @@ steps:
 
 - name: s3-publish
   image: plugins/s3
-  acl: private
-  region: ap-southeast-1
-  secret_key:
-    from_secret: AWS_SECRET_ACCESS_KEY
-  access_key:
-    from_secret: AWS_ACCESS_KEY_ID
-  bucket: lbd-project
-  target: project-feed
-  source: lambda-project-${DRONE_BUILD_NUMBER}.zip
+  settings:
+    acl: private
+    region: ap-southeast-1
+    secret_key:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    access_key:
+      from_secret: AWS_ACCESS_KEY_ID
+    bucket: lbd-project
+    target: project-feed
+    source: lambda-project-${DRONE_BUILD_NUMBER}.zip
   when:
     event:
     - push

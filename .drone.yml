@@ -51,7 +51,7 @@ steps:
     from_secret: AWS_SECRET_ACCESS_KEY
   aws_access_key_id:
     from_secret: AWS_ACCESS_KEY_ID
-  filename: project-feed/lambda-project-${DRONE_BUILD_NUMBER}.zip
+  filename: project-feed/lambda-feeds.zip
   when:
     event:
     - promote

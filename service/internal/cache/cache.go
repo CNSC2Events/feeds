@@ -33,7 +33,11 @@ func GetReadySignal() {
 
 func refreshCache(ctx context.Context) {
 
-	refreshOnceIfEmpty(ctx)
+	if getSize() == 0 {
+		refreshOnceIfEmpty(ctx)
+		rdyChan <- struct{}{}
+		return
+	}
 
 	ticker := time.NewTicker(5 * time.Minute)
 
@@ -50,13 +54,9 @@ func refreshCache(ctx context.Context) {
 }
 
 func refreshOnceIfEmpty(ctx context.Context) {
-	if getSize() > 0 {
-		return
-	}
 	if err := buildCache(ctx); err != nil {
 		log.Warn().Err(err).Send()
 	}
-	rdyChan <- struct{}{}
 }
 
 func getSize() int {

@@ -1,5 +1,8 @@
 {
     "name": "feeds",
+    "environment":{
+        "TZ":"Asia/Shanghai"
+    },
     "profile": "scnace_aws",
     "proxy": {
         "timeout": 25,

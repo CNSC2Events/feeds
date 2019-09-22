@@ -65,5 +65,12 @@ func GetAllMatches() []*tlp.Event {
 		}
 		return true
 	})
+	// TODO: stackoverflow warning
+	if len(matches) == 0 {
+		if err := buildCache(context.Background()); err != nil {
+			log.Warn().Msgf("get match:  %q", err)
+		}
+		return GetAllMatches()
+	}
 	return matches
 }

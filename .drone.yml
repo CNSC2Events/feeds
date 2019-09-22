@@ -20,7 +20,7 @@ steps:
       from_secret: AWS_SECRET_ACCESS_KEY
     AWS_ACCESS_KEY_ID:
       from_secret: AWS_ACCESS_KEY_ID
-    GO111MODULE: on
+    SERVERLESS: on
   commands:
   - curl -sf https://up.apex.sh/install | sh
   - up deploy staging -v
@@ -38,7 +38,7 @@ steps:
       from_secret: AWS_SECRET_ACCESS_KEY
     AWS_ACCESS_KEY_ID:
       from_secret: AWS_ACCESS_KEY_ID
-    GO111MODULE: on
+    SERVERLESS: on
   commands:
   - curl -sf https://up.apex.sh/install | sh
   - up deploy production -v
@@ -52,7 +52,7 @@ steps:
   image: plugins/docker
   settings:
     repo: scnace/feeds
-    autotag: true
+    auto_tag: true
     username:
         from_secret: DOCKERHUB_USER
     password:

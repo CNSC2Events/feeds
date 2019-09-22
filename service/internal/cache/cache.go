@@ -2,13 +2,12 @@ package cache
 
 import (
 	"context"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/rs/zerolog/log"
 )
-
-var rdyChan chan struct{}
 
 var data *sync.Map
 
@@ -16,28 +15,13 @@ var data *sync.Map
 func Init(ctx context.Context) {
 	data = new(sync.Map)
 
-	go refreshCache(ctx)
-}
-
-func GetReadySignal() {
-	if getSize() > 0 {
-		return
-	}
-	for {
-		select {
-		case <-rdyChan:
-			return
-		}
+	// serverless app will not spawn up a goroutine
+	if os.Getenv("SERVERLESS") == "" {
+		go refreshCache(ctx)
 	}
 }
 
 func refreshCache(ctx context.Context) {
-
-	if getSize() == 0 {
-		refreshOnceIfEmpty(ctx)
-		rdyChan <- struct{}{}
-		return
-	}
 
 	ticker := time.NewTicker(5 * time.Minute)
 
@@ -51,22 +35,4 @@ func refreshCache(ctx context.Context) {
 		}
 	}
 
-}
-
-func refreshOnceIfEmpty(ctx context.Context) {
-	if err := buildCache(ctx); err != nil {
-		log.Warn().Err(err).Send()
-	}
-}
-
-func getSize() int {
-
-	var len int
-
-	data.Range(func(k, v interface{}) bool {
-		len++
-		return true
-	})
-
-	return len
 }

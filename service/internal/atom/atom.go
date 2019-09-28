@@ -64,9 +64,9 @@ func buildTitle(e *tlp.Event) string {
 func buildHTMLContent(e *tlp.Event) string {
 	tmpl := `<html>
 	<body>
-		<p id="serires">Series: %s</p>
-		<p id="vs">VS: %s</p>
-		<p id="start_at">Fight At: %s</p>
+		<p>Series: <span id="serires">%s</span></p>
+		<p>VS: <span id="vs">%s</span></p>
+		<p>Fight At: <span id="start_at">%s</span></p>
 	</body>
 	</html>`
 

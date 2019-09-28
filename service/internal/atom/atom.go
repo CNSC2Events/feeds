@@ -4,6 +4,7 @@ package atom
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/CNSC2Events/tlp"
@@ -38,6 +39,7 @@ func (f Feeds) Writer() (*bytes.Buffer, error) {
 			Description: "",
 			Author:      &feeds.Author{Name: "Nace Sc", Email: "scbizu@gmail.com"},
 			Created:     now,
+			Content:     buildHTMLContent(item),
 		})
 	}
 
@@ -52,8 +54,16 @@ func (f Feeds) Writer() (*bytes.Buffer, error) {
 }
 
 func buildTitle(e *tlp.Event) string {
+	vs := strings.ReplaceAll(e.GetVersus(), "\n", "")
 	if e.IsOnGoing {
-		return fmt.Sprintf("[OnGoing][%s]%s", e.Series, e.GetVersus())
+		return fmt.Sprintf("[OnGoing][%s]%s", e.Series, vs)
 	}
-	return fmt.Sprintf("[%s]%s", e.Series, e.GetVersus())
+	return fmt.Sprintf("[%s]%s", e.Series, vs)
+}
+
+func buildHTMLContent(e *tlp.Event) string {
+	tmpl := "<html><body><p>Series: %s</p><p>VS: %s</p><p>Fight At: %s</p></body></html>"
+
+	vs := strings.ReplaceAll(e.GetVersus(), "\n", "")
+	return fmt.Sprintf(tmpl, e.Series, vs, e.StartAt.String())
 }

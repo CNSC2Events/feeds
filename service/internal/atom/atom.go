@@ -62,7 +62,13 @@ func buildTitle(e *tlp.Event) string {
 }
 
 func buildHTMLContent(e *tlp.Event) string {
-	tmpl := "<html><body><p>Series: %s</p><p>VS: %s</p><p>Fight At: %s</p></body></html>"
+	tmpl := `<html>
+	<body>
+		<p id="serires">Series: %s</p>
+		<p id="vs">VS: %s</p>
+		<p id="start_at">Fight At: %s</p>
+	</body>
+	</html>`
 
 	vs := strings.ReplaceAll(e.GetVersus(), "\n", "")
 	return fmt.Sprintf(tmpl, e.Series, vs, e.StartAt.String())
